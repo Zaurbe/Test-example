@@ -2,25 +2,44 @@
 
 using namespace std;
 
-void Array_merging(int n, int m, int *pointer_A, int *pointer_B)
+void Array_merging(int n, int m, int *A, int *B)
 {
     int i=0, j=0;
     int *C;
     C = new int [m+n];
     int g=0;
-    while (g<m+n)
+    while (i<n && j<m)
     {
-        if (*pointer_A >= *pointer_B)
+        if (A[i] <= B[j])
         {
-            C[g] = *pointer_A;
-            pointer_A++;
+            C[g]=A[i];
+            i++;
             g++;
         }
         else
         {
-            C[g]=*pointer_B;
-            pointer_B++;
+            C[g]=B[j];
+            j++;
             g++;
+        }
+    }
+    if (i<n)
+    {
+        while (i<n)
+        {
+            C[g]=A[i];
+            i++;
+        }
+    }
+    else
+    {
+        if (j<m)
+        {
+            while (j<m)
+            {
+                C[g]=B[j];
+                j++;
+            }
         }
     }
     cout << "New array: ";
@@ -92,7 +111,7 @@ int main()
 {
     int n, m, i;
     cin >> n >> m;
-    int *A, *B, *pointer_A, *pointer_B;
+    int *A, *B;
     A = new int [n];
     B = new int [m];
     for (i=0; i<n; i++)
@@ -103,10 +122,9 @@ int main()
     {
         cin >> B[i];
     }
-    pointer_A = &(A[0]);
-    pointer_B = &(B[0]);
-    Array_merging(n, m, pointer_A, pointer_B);
+    Array_merging(n, m, A, B);
     int f;
+    cout << endl;
     cin >> f;
     int *X;
     X = new int [f];
