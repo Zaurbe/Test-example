@@ -1,137 +1,71 @@
+// Реализация пирамидальной сортировки на C++
 #include <iostream>
 
 using namespace std;
 
-void Array_merging(int n, int m, int *A, int *B)
+// Процедура для преобразования в двоичную кучу поддерева с корневым узлом i, что является
+// индексом в arr[]. n - размер кучи
+
+void heapify(int arr[], int n, int i)
 {
-    int i=0, j=0;
-    int *C;
-    C = new int [m+n];
-    int g=0;
-    while (i<n && j<m)
+    int largest = i;
+// Инициализируем наибольший элемент как корень
+    int l = 2*i + 1; // левый = 2*i + 1
+    int r = 2*i + 2; // правый = 2*i + 2
+
+ // Если левый дочерний элемент больше корня
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
+
+   // Если правый дочерний элемент больше, чем самый большой элемент на данный момент
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
+
+    // Если самый большой элемент не корень
+    if (largest != i)
     {
-        if (A[i] <= B[j])
-        {
-            C[g]=A[i];
-            i++;
-            g++;
-        }
-        else
-        {
-            C[g]=B[j];
-            j++;
-            g++;
-        }
-    }
-    if (i<n)
-    {
-        while (i<n)
-        {
-            C[g]=A[i];
-            i++;
-        }
-    }
-    else
-    {
-        if (j<m)
-        {
-            while (j<m)
-            {
-                C[g]=B[j];
-                j++;
-            }
-        }
-    }
-    cout << "New array: ";
-    for (int g=0; g<m+n; g++)
-    {
-        cout << C[g] << " ";
+        swap(arr[i], arr[largest]);
+
+// Рекурсивно преобразуем в двоичную кучу затронутое поддерево
+        heapify(arr, n, largest);
     }
 }
 
-void Merge_Sort (int *X, int f)
+// Основная функция, выполняющая пирамидальную сортировку
+void heapSort(int arr[], int n)
 {
-    int *S;
-    S = new int [f];
-    int middle = f/2;
-    if (f%2==1)
+  // Построение кучи (перегруппируем массив)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+   // Один за другим извлекаем элементы из кучи
+    for (int i=n-1; i>=0; i--)
     {
-        middle++;
-    }
-    int h=1, t;
-    while (h<f)
-    {
-        t=h;
-        int i=0, j=middle, k=0;
-        while (t<=middle)
-        {
-            while ((i<t) && (j<f) && (j<(middle+t)))
-            {
-                if (X[i] < X[j])
-                {
-                    S[k] = X[i];
-                    i++;
-                    k++;
-                }
-                else
-                {
-                    S[k] = X[j];
-                    j++;
-                    k++;
-                }
-            }
-            while (i<t)
-            {
-                S[k] = X[i];
-                i++;
-                k++;
-            }
-            while (j<(middle+t) && j<f)
-            {
-                S[k] = X[j];
-                j++;
-                k++;
-            }
-            t=t+h;
-        }
-        h=h*2;
-        for (i=0; i<f; i++)
-        {
-            X[i]=S[i];
-        }
-    }
-    cout << "New array after Merge Sort: ";
-    for (int l=0; l<f; l++)
-    {
-        cout << X[l] << " ";
+        // Перемещаем текущий корень в конец
+        swap(arr[0], arr[i]);
+
+        // вызываем процедуру heapify на уменьшенной куче
+        heapify(arr, i, 0);
     }
 }
 
+/* Вспомогательная функция для вывода на экран массива размера n*/
+void printArray(int arr[], int n)
+{
+    for (int i=0; i<n; ++i)
+        cout << arr[i] << " ";
+    cout << "\n";
+}
+
+// Управляющая программа
 int main()
 {
-    int n, m, i;
-    cin >> n >> m;
-    int *A, *B;
-    A = new int [n];
-    B = new int [m];
-    for (i=0; i<n; i++)
-    {
-        cin >> A[i];
-    }
-    for (i=0; i<m; i++)
-    {
-        cin >> B[i];
-    }
-    Array_merging(n, m, A, B);
-    int f;
-    cout << endl;
-    cin >> f;
-    int *X;
-    X = new int [f];
-    for (i=0; i<f; i++)
-    {
-        cin >> X[i];
-    }
-    Merge_Sort(X, f);
+    int arr[] = {12, 11, 13, 5, 6, 7};
+    int n = sizeof(arr)/sizeof(arr[0]);
+
+    heapSort(arr, n);
+
+    cout << "Sorted array is \n";
+    printArray(arr, n);
     return 0;
 }
