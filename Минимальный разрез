@@ -1,0 +1,140 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define V 8
+
+int search_a_path_from_s_to_t(int Graph[V][V], int s, int t, int path[])
+{
+    bool visited[V];
+    for (int i=0; i < V; i++)
+    {
+        visited[i] = false;
+    }
+    queue <int> Queue;
+    Queue.push(s);
+    visited[s] = true;
+    path[s] = -1;
+    int v;
+    while (!Queue.empty())
+    {
+        int u = Queue.front();
+        Queue.pop();
+        for (v = 0; v < V; v++)
+        {
+            if (visited[v] == false && Graph[u][v] > 0)
+            {
+                Queue.push(v);
+                path[v] = u;
+                visited[v] = true;
+            }
+        }
+    }
+    return (visited[t] == true);
+}
+
+void search_for_all_reachable_vertices_from_s(int Graph[V][V], int s, bool visited[])
+{
+    visited[s] = true;
+    for (int i = 0; i < V; i++)
+    {
+        if (Graph[s][i] && !visited[i])
+        {
+            search_for_all_reachable_vertices_from_s(Graph, i, visited);
+        }
+    }
+}
+
+void minCut(int graph[V][V], int s, int t)
+{
+    int u, v;
+    int Graph[V][V];
+    for (u = 0; u < V; u++)
+    {
+        for (v = 0; v < V; v++)
+        {
+            Graph[u][v] = graph[u][v];
+        }
+    }
+
+    int path[V];
+    while (search_a_path_from_s_to_t(Graph, s, t, path))
+    {
+        int path_flow = INT_MAX;
+        for (v = t; v != s; v = path[v])
+        {
+            u = path[v];
+            path_flow = min(path_flow, Graph[u][v]);
+        }
+
+        for (v = t; v != s; v = path[v])
+        {
+            u = path[v];
+            Graph[u][v] = Graph[u][v] - path_flow;
+            Graph[v][u] = Graph[v][u] + path_flow;
+        }
+    }
+
+    bool visited[V];
+    for (int i=0; i < V; i++)
+    {
+        visited[i] = false;
+    }
+    search_for_all_reachable_vertices_from_s(Graph, s, visited);
+
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            if (visited[i] && !visited[j] && graph[i][j])
+            {
+                cout << i-1 << " -> " << j-1 << endl;
+            }
+        }
+    }
+}
+
+int main()
+{
+    int graph[V-2][V-2] = { {0, 1, 0, 1, 0, 1},
+                            {1, 0, 1, 0, 1, 0},
+                            {0, 1, 0, 1, 0, 1},
+                            {1, 0, 1, 0, 1, 0},
+                            {0, 1, 0, 1, 0, 1},
+                            {1, 0, 1, 0, 1, 0} };
+
+    cout << "Minimum cut: " << endl;
+
+    int group_1[3] = {0,1,2}, group_2[3] = {3,4,5};
+
+    int new_graph[V][V];
+
+    for (int i=0; i<V; i++)
+    {
+        for (int j=0; j<V; j++)
+        {
+            new_graph[i][j] = 0;
+        }
+    }
+    for (int i=1; i<V-1; i++)
+    {
+        for (int j=1; j<V-1; j++)
+        {
+            new_graph[i][j] = graph[i-1][j-1];
+        }
+    }
+    for (int k=0; k<(sizeof(group_1)/sizeof(*group_1)); k++)
+    {
+        new_graph[0][group_1[k]+1] = INT_MAX;
+        new_graph[group_1[k]+1][0] = INT_MAX;
+    }
+    for (int k=0; k<(sizeof(group_2)/sizeof(*group_2)); k++)
+    {
+        new_graph[V-1][group_2[k]+1] = INT_MAX;
+        new_graph[group_2[k]+1][V-1] = INT_MAX;
+    }
+
+    minCut(new_graph, 0, 7);
+
+    return 0;
+}
