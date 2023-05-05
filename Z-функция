@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector <int> z_function(const string& String)
+{
+    vector <int> Z_function(String.size(), 0);
+    int k=0, n=0, i;
+    for (i=1; i<String.size(); i++)
+    {
+        if (i<=n)
+        {
+            Z_function[i] = min(Z_function[i-k],n-i+1);
+        }
+
+        while (i+Z_function[i] < String.size())
+        {
+            if (String[i+Z_function[i]] == String[Z_function[i]])
+            {
+                Z_function[i]++;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if (Z_function[i]>0 && i+Z_function[i]-1>n)
+        {
+            k=i;
+            n=i+Z_function[i]-1;
+        }
+    }
+    return Z_function;
+}
+
+int main()
+{
+    string String, Substring;
+    cin >> String >> Substring;
+    vector<int> Z_function = z_function(Substring + ' ' + String);
+    int Substring_length = Substring.size();
+    for (int i=0; i<String.size(); i++)
+    {
+        if (Z_function[Substring_length+i+1] == Substring_length)
+        {
+            cout << "String[" << i << ";" << i+Substring_length-1 << "]" << endl;
+        }
+    }
+    return 0;
+}
