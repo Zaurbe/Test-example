@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define V 5
+
+int graph[V][2];
+vector<int> match;
+vector<char> visited;
+
+bool Kuhn_Algorithm(int t)
+{
+    if (visited[t])  return false;
+    visited[t] = true;
+    for (int i=0; i<V; i++)
+    {
+        int k = graph[t][i];
+        if (match[k] == -1 || Kuhn_Algorithm (match[k]))
+        {
+            match[k] = t;
+            return true;
+        }
+    }
+    return false;
+}
+
+int main()
+{
+    for(int i=0; i<V; i++)
+    {
+        cin >> graph[i][0];
+        cin >> graph[i][1];
+    }
+
+    match.assign(V, -1);
+    for (int x=0; x<V; ++x)
+    {
+        visited.assign(V, false);
+        Kuhn_Algorithm(x);
+    }
+
+    cout << endl << "Maximum matching: " << endl;
+    for (int i=0; i<V; i++)
+        if (match[i] != -1)
+            cout << match[i] << " <-> " << i << endl;
+
+    return 0;
+}
