@@ -10,7 +10,10 @@ vector<char> visited;
 
 bool Kuhn_Algorithm(int t)
 {
-    if (visited[t])  return false;
+    if (visited[t])  
+    {
+        return false;
+    }
     visited[t] = true;
     for (int i=0; i<V; i++)
     {
